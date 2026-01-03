@@ -26,6 +26,7 @@
 #define PLAIN 2
 
 #define BUFLEN 64
+#define CORRECT_PASSWORD "h0px3"
 
 uint8_t memory[BUFLEN];
 uint8_t tmp[BUFLEN];
@@ -63,16 +64,23 @@ void my_read(char *buf, int len)
   buf[len - 1] = '\0';
 }
 
+void delay(volatile int n) {
+    while(n--) {
+        __asm__("nop");  // optional: prevent optimization
+    }
+}
+
+
 int main(void)
-  {
+{
     platform_init();
-  init_uart();
-  trigger_setup();
+	init_uart();
+	trigger_setup();
 
     char passwd[32];
-    char correct_passwd[] = "h0px3";
+    char correct_passwd[] = CORRECT_PASSWORD;
 
-  while(1){
+	while(1){
 
         my_puts("*****Safe-o-matic 3000 Booting...\n");
         //Print some fancy-sounding stuff so that attackers
@@ -89,27 +97,27 @@ int main(void)
 
         //Give them one last warning
         my_puts("WARNING: UNAUTHORIZED ACCESS WILL BE PUNISHED\n");
-
-        trigger_low();
-
+		
         //Get password
         my_puts("Please enter password to continue: ");
         my_read(passwd, 32);
 
         uint8_t passbad = 0;
 
-        trigger_high();
-
-        for(uint8_t i = 0; i < sizeof(correct_passwd); i++){
+		trigger_high();
+				
+        for(uint8_t i = 0; i < sizeof(correct_passwd); i++) {
             if (correct_passwd[i] != passwd[i]){
                 passbad = 1;
                 break;
             }
         }
 
+		trigger_low();
+
         if (passbad){
             //Stop them fancy timing attacks
-             int wait = 1;
+			int wait = 1;
             for(volatile int i = 0; i < wait; i++){
                 ;
             }
@@ -124,9 +132,10 @@ int main(void)
 
         //All done;
         while(1);
-  }
+	}
+	
 
-  return 1;
-  }
+	return 1;
+}
 
 

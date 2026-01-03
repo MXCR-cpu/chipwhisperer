@@ -83,14 +83,15 @@ int main(void)
 			state = INPUT;
 			continue;
 		}
-		
 		else if (state == INPUT) {
 			if ((c == '\n') || (c == '\r')) {
+				trigger_high();
 				// We received the final character - decode our string
 				hex_decode(ascii_idx, (char*)ascii_buffer, data_buffer);
-
+			   
 				// Decrypt data in-place
 				decrypt_data(data_buffer, DATA_BUFLEN);
+				trigger_low();
 				
 				// This is where we would write the image into memory
 				
@@ -122,14 +123,14 @@ int main(void)
 		if(state == RESPOND)
 		{
 			// Send the ascii buffer back 
-			trigger_high();
+			/* trigger_high(); */
 			
-			int i;
+			volatile int i;
 			for(i = 0; i < ascii_idx; i++)
 			{
 				putch(ascii_buffer[i]);
 			}
-			trigger_low();
+			/* trigger_low(); */
 			state = IDLE;
 		}
 	}

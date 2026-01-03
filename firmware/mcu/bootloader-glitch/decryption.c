@@ -18,7 +18,7 @@ void decrypt_data(uint8_t* buffer, uint8_t len)
 	// Apply rot-13 to each byte
 	int i, j;
 	for(i = 0; i < len; i++)
-	{
+     	{
 		// Search for character inside input array
 		for(j = 0; j < num_chars; j++)
 		{
